@@ -651,8 +651,15 @@ class SmbTransportImpl extends Transport implements SmbTransportInternal, SmbCon
             r.received();
 
             if ( doPreauth ) {
-                negoRespBuffer = new byte[respLen];
-                System.arraycopy(this.sbuf, 4, negoRespBuffer, 0, respLen);
+            	try {
+                    negoRespBuffer = new byte[respLen];
+                    System.arraycopy(this.sbuf, 4, negoRespBuffer, 0, respLen);
+            	} catch(OutOfMemoryError e) {
+            		String e_msg="Negotiate2 error. reason=OutOfMemoryError, respLen="+respLen;
+            		log.error(e_msg);
+            		throw new IOException("Negotiate2 error. reason=OutOfMemoryError, respLen="+respLen);
+            	}
+
             }
             else {
                 negoReqBuffer = null;
